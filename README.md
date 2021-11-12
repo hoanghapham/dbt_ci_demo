@@ -19,11 +19,15 @@ If you are not familiar with the tool, it is best to start with [GitHub's docume
 For this setup to work, you will need a few things:
 - **Required dbt version:** 0.21.0 or above (As of this writing's date, v0.21.0 is the latest version). dbt 0.21 has introduced the powerful `dbt build` command that you should definitely use.
 - **dbt project setup**: dbt stores information about database connections in the `profiles.yml` file. In this tutorial, we will place the file in a `test_profiles` folder.
-	.
-	├── dbt_project.yml
-	├── models
-	├── test_profiles
-	│   └── profiles.yml
+
+```
+.
+|-- dbt_project.yml
+|-- models
+|-- test_profiles
+|   |-- profiles.yml
+```
+
 
 - **Data:** In this tutorial, I will use a free Google BigQuery account. You can also easily register for one yourself [following this instruction](https://cloud.google.com/bigquery/docs/sandbox).
 	If you decide to use BigQuery, you will also need to create a Service Account, and download the key [following this instruction](https://cloud.google.com/iam/docs/creating-managing-service-account-keys). 
@@ -77,10 +81,9 @@ jobs:
       DBT_CI_BIGQUERY_PROJECT_ID: ${{ secrets.DBT_CI_BIGQUERY_PROJECT_ID }} # Make the BigQuery project ID available as an env var
 
     steps:
-
       - name: Check out ${{ github.head_ref }}
         uses: actions/checkout@v2
-	
+        
       - name: Read Bigquery credentials from secret
         shell: bash
         env: 
@@ -94,11 +97,11 @@ jobs:
         run: |
           pip3 install dbt==0.21.0;
           dbt deps;
-
-      - name: Build & test models
+      
+      - name: Build & Test models
         shell: bash
-        run: dbt build 
-	
+        run: dbt build
+        
       # Upload compiled SQL as artifacts
       - name: Archive compiled SQL
         if: ${{ always() }}
@@ -163,10 +166,9 @@ jobs:
       DBT_CI_BIGQUERY_PROJECT_ID: ${{ secrets.DBT_CI_BIGQUERY_PROJECT_ID }}
 
     steps:
-
       - name: Check out ${{ github.head_ref }}
         uses: actions/checkout@v2
-
+        
       - name: Checkout master
         uses: actions/checkout@v2
         with:
@@ -195,7 +197,7 @@ jobs:
       - name: Build & test models
         shell: bash
         run: dbt build --select state:modified --defer --state master_branch/target/
-
+        
       - name: Archive compiled SQL
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
@@ -310,9 +312,8 @@ on:
 
 jobs:
   update-project-state:
-  	if: github.event.pull_request.merged == true
-	runs-on: ubuntu-latest
-
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
 ```
 	
 specifies the types of events that will trigger this workflow. 
