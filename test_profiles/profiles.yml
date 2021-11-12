@@ -1,0 +1,24 @@
+demo_ci:
+  target: ci
+
+  outputs:
+    ci:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('DBT_CI_BIGQUERY_PROJECT_ID') }}"
+      dataset: dbt_ci
+      keyfile: ./test_profiles/cred.json
+      threads: 4
+      timeout_seconds: 300
+      priority: interactive
+
+
+    ci-with-pr:
+      type: bigquery
+      method: service-account
+      project: "{{ env_var('DBT_CI_BIGQUERY_PROJECT_ID') }}"
+      dataset: dbt_ci_pr_{{ env_var('PR_NUMBER') }}
+      keyfile: ./test_profiles/cred.json
+      threads: 4
+      timeout_seconds: 300
+      priority: interactive

@@ -1,0 +1,8 @@
+target/
+dbt_modules/
+logs/
+cred.json
+.user.yml
+*.env
+setup.sh
+master_branch/
