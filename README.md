@@ -80,7 +80,7 @@ jobs:
 
       - name: Check out ${{ github.head_ref }}
         uses: actions/checkout@v2
-		
+	
       - name: Read Bigquery credentials from secret
         shell: bash
         env: 
@@ -98,8 +98,8 @@ jobs:
       - name: Build & test models
         shell: bash
         run: dbt build 
-		
-		# Upload compiled SQL as artifacts
+	
+      # Upload compiled SQL as artifacts
       - name: Archive compiled SQL
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
@@ -227,6 +227,7 @@ We can certainly flex further and look for a way to reuse this manifest file.
 During a development workflow, it is unlikely that the manifest file will change that much. It is natural to think of reusing this file, but GitHub Actions does not allow sharing files between different job runs. We can work around this with workflow that update the manifest file when you merge a new PR.
 
 ```mermaid
+# Mermaid flow chart
 flowchart TB
 	start([Start]) --> dev_models[Develop Models]
 	dev_models --> push_remote[Push to remote]
@@ -304,12 +305,12 @@ This part:
 ```yaml
 on: 
   pull_request: 
-	  types: [closed]
+  	types: [closed]
   workflow_dispatch:
 
 jobs:
   update-project-state:
-	if: github.event.pull_request.merged == true
+  	if: github.event.pull_request.merged == true
 	runs-on: ubuntu-latest
 
 ```
