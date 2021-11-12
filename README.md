@@ -307,7 +307,7 @@ This part:
 ```yaml
 on: 
   pull_request: 
-  	types: [closed]
+    types: [closed]
   workflow_dispatch:
 
 jobs:
