@@ -1,0 +1,40 @@
+name: CI testing - Full Run - No container
+on: [pull_request]
+
+jobs:
+  ci-full-run-no-container:
+    runs-on: ubuntu-latest
+
+    env: 
+      DBT_PROFILES_DIR: ./test_profiles
+      DBT_CI_BIGQUERY_PROJECT_ID: ${{ secrets.DBT_CI_BIGQUERY_PROJECT_ID }}
+
+    steps:
+
+      - name: Check out ${{ github.head_ref }}
+        uses: actions/checkout@v2
+
+      - name: Read Bigquery credentials from secret
+        shell: bash
+        env: 
+          DBT_CI_BIGQUERY_CRED: ${{ secrets.DBT_CI_BIGQUERY_CRED }}
+        run: |
+          mkdir -p ./test_profiles;
+          echo $DBT_CI_BIGQUERY_CRED | base64 -d -i > ./test_profiles/cred.json
+
+      - name: Install dbt & packages
+        shell: bash
+        run: |
+          pip3 install dbt==0.21.0;
+          dbt deps;
+
+      - name: Build & test models
+        shell: bash
+        run: dbt build 
+
+      - name: Archive compiled SQL
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with: 
+          name: compiled_sql
+          path: ./target/compiled
