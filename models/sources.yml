@@ -1,0 +1,8 @@
+version: 2
+
+sources: 
+  - name: src_github
+    database: "{{ env_var('DBT_CI_BIGQUERY_PROJECT_ID') }}"
+    schema: github
+    tables:
+      - name: languages

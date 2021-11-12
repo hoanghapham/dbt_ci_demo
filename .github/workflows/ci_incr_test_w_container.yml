@@ -1,0 +1,41 @@
+name: CI testing - Incremental run reusing manifest.json - With container
+on: [pull_request]
+
+jobs:
+  ci-incr-run:
+    runs-on: ubuntu-latest
+    container: 
+      image: fishtownanalytics/dbt:0.21.0
+
+    env: 
+      DBT_PROFILES_DIR: ./test_profiles
+      DBT_CI_BIGQUERY_PROJECT_ID: ${{ secrets.DBT_CI_BIGQUERY_PROJECT_ID }}
+
+    steps:
+
+      - name: Check out ${{ github.head_ref }}
+        uses: actions/checkout@v2
+
+      - name: Read Bigquery credentials from secret
+        shell: bash
+        env: 
+          DBT_CI_BIGQUERY_CRED: ${{ secrets.DBT_CI_BIGQUERY_CRED }}
+        run: |
+          mkdir -p ./test_profiles;
+          echo $DBT_CI_BIGQUERY_CRED | base64 -d -i > ./test_profiles/cred.json;
+
+      - name: Install dbt packages
+        shell: bash
+        run: |
+          dbt deps;
+
+      - name: Build & test models
+        shell: bash
+        run: dbt build --select state:modified --defer --state current_state/
+
+      - name: Archive compiled SQL
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v2
+        with: 
+          name: compiled_sql
+          path: ./target/compiled
