@@ -1,0 +1,51 @@
+name: Update dbt project state - With container
+on: 
+  pull_request: 
+    types: [closed]
+  workflow_dispatch:
+  
+jobs:
+  update-project-state:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    container: 
+      image: fishtownanalytics/dbt:0.21.0
+
+    env: 
+      DBT_PROFILES_DIR: ./test_profiles
+      DBT_CI_BIGQUERY_PROJECT_ID: ${{ secrets.DBT_CI_BIGQUERY_PROJECT_ID }}
+
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v2
+        with:
+          ref: master
+
+      - name: Read Bigquery credentials from secret
+        shell: bash
+        env: 
+          DBT_CI_BIGQUERY_CRED: ${{ secrets.DBT_CI_BIGQUERY_CRED }}
+        run: |
+          mkdir -p ./test_profiles;
+          echo $DBT_CI_BIGQUERY_CRED | base64 -d -i > ./test_profiles/cred.json;
+
+      - name: Set up environment
+        shell: bash
+        run: |
+          echo "TODAY=$(date +'%Y-%m-%d')" >> $GITHUB_ENV;
+
+      - name: Generate manifest.json from master
+        shell: bash
+        run: |
+          dbt deps;
+          dbt compile --no-version-check;
+          mkdir -p ./current_state;
+          cp ./target/manifest.json ./current_state/manifest.json;
+
+      - name: Commit new manifest.json file
+        uses: EndBug/add-and-commit@v7.4.0
+        with:
+          add: './current_state/manifest.json'
+          message: 'manifest.json updated on ${{ env.TODAY }}'
+          push: true
+          branch: master
