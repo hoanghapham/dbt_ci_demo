@@ -14,10 +14,10 @@ jobs:
       - name: Check out ${{ github.head_ref }}
         uses: actions/checkout@v2
 
-      - name: Checkout master
+      - name: Checkout main branch
         uses: actions/checkout@v2
         with:
-          ref: master
+          ref: main
           path: master_branch/
 
       - name: Read Bigquery credentials from secret
