@@ -80,7 +80,7 @@ jobs:
 
       - name: Check out ${{ github.head_ref }}
         uses: actions/checkout@v2
-		
+
       - name: Read Bigquery credentials from secret
         shell: bash
         env: 
@@ -97,9 +97,9 @@ jobs:
 
       - name: Build & test models
         shell: bash
-        run: dbt build 
-		
-		# Upload compiled SQL as artifacts
+        run: dbt build
+	
+      # Upload compiled SQL as artifacts
       - name: Archive compiled SQL
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
@@ -304,7 +304,7 @@ This part:
 ```yaml
 on: 
   pull_request: 
-	  types: [closed]
+	types: [closed]
   workflow_dispatch:
 
 jobs:
