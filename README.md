@@ -304,13 +304,13 @@ This part:
 ```yaml
 on: 
   pull_request:
-	types: [closed]
+        types: [closed]
   workflow_dispatch:
 
 jobs:
   update-project-state:
-	if: github.event.pull_request.merged == true
-	runs-on: ubuntu-latest
+        if: github.event.pull_request.merged == true
+        runs-on: ubuntu-latest
 
 ```
 	
