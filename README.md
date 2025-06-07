@@ -98,7 +98,7 @@ jobs:
       - name: Build & test models
         shell: bash
         run: dbt build
-	
+
       # Upload compiled SQL as artifacts
       - name: Archive compiled SQL
         if: ${{ always() }}
@@ -303,7 +303,7 @@ jobs:
 This part:
 ```yaml
 on: 
-  pull_request: 
+  pull_request:
 	types: [closed]
   workflow_dispatch:
 
